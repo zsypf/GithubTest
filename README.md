@@ -1,3 +1,4 @@
 # GithubTest
 这是我用来学习测试的
-https://dynamics.microsoft.com/en-us/dynamics-365-free-trial/
+https://dynamics.microsoft.com/en-us/dynamics-365-free-tri
+npm ERR! code 1
