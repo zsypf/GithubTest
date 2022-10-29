@@ -1,4 +1,39 @@
 # GithubTest
 这是我用来学习测试的
-https://dynamics.microsoft.com/en-us/dynamics-365-free-tri
-https://aiacom.sharepoint.com/sites/CRMTeam/Shared%20Documents/Forms/AllItems.aspx?csf=1&web=1&e=k62Deb&OR=Teams%2DHL&CT=1665481750300&clickparams=eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiIyNy8yMjA5MDQwMDcxMiIsIkhhc0ZlZGVyYXRlZFVzZXIiOmZhbHNlfQ%3D%3D&cid=8596c35c%2D819b%2D4651%2Da27f%2D3b40138886ad&RootFolder=%2Fsites%2FCRMTeam%2FShared%20Documents%2FGeneral%2FDynamics365%20training%20materials%2FChengDu%20Intern%20Training%20Records&FolderCTID=0x012000F005FFDBB4F1E444A861741DEE4A8E81
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Workflow;
+
+using System.Activities;
+
+
+
+namespace Aiden1.Workflow
+{
+    public class PreCreateStudent : CodeActivity
+    {
+        [Input("cr73b_name")]
+        public InArgument<string> cr73b_name { get; set; }
+
+        [Output("cr73b_lanid")]
+        public OutArgument<string> cr73b_lanid { get; set; }
+        [Output("cr73b_staffemail")]
+        public OutArgument<string> cr73b_staffemail { get; set; }
+        [Output("cr73b_groupby")]
+        public OutArgument<string> cr73b_groupby { get; set; }
+
+        protected override void Execute(CodeActivityContext executionContext)
+        {
+            ITracingService tracingService = executionContext.GetExtension<ITracingService>();
+            IWorkflowContext context = executionContext.GetExtension<IWorkflowContext>();
+            IOrganizationServiceFactory serviceFactory = executionContext.GetExtension<IOrganizationServiceFactory>();
+            IOrganizationService service = serviceFactory.CreateOrganizationService(context.UserId);
+
+            var key = cr73b_name.Get(executionContext);
+            tracingService.Trace(key);
+            cr73b_lanid.Set(executionContext, $"AidenVS:" + key);
+            cr73b_staffemail.Set(executionContext, $"AidenVS1:" + key);
+            cr73b_groupby.Set(executionContext, $"AidenVS1:" + key);
+        }
+    }
+}
+
