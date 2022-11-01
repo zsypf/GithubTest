@@ -1,5 +1,14 @@
 # GithubTest
 这是我用来学习测试的
+
+if (context.InputParameters.Contains("Target") && context.InputParameters["Target"] is Entity)
+            {
+                Entity entity = (Entity)context.InputParameters["Target"];
+                entity["aiatips_name"] = $"CreatePlugin_" + QueryCount(service);
+                entity["aiatips_option"] = new OptionSetValue(594310000);
+                entity["aiatips_accountid"] = new EntityReference("account", new Guid("097FF782-624B-EC11-8F8E-002248166E78"));
+            }
+
 private int QueryCount(IOrganizationService service)
         {
             QueryExpression query = new QueryExpression("aiatips_students");
