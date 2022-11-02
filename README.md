@@ -1,38 +1,72 @@
 # GithubTest
 这是我用来学习测试的
 
-if (context.InputParameters.Contains("Target") && context.InputParameters["Target"] is Entity)
-            {
-                Entity entity = (Entity)context.InputParameters["Target"];
-                entity["aiatips_name"] = $"CreatePlugin_" + QueryCount(service);
-                entity["aiatips_option"] = new OptionSetValue(594310000);
-                entity["aiatips_accountid"] = new EntityReference("account", new Guid("097FF782-624B-EC11-8F8E-002248166E78"));
-            }
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Sdk.Workflow;
 
-private int QueryCount(IOrganizationService service)
+using System.Activities;
+
+
+
+namespace Aiden1.Workflow
+{
+    public class PreCreateStudent : CodeActivity
+    {
+        [Input("cr73b_staffemail")]
+        public InArgument<string> cr73b_staffemail { get; set; }
+
+        [Output("cr73b_lanid")]
+        public OutArgument<string> cr73b_lanid { get; set; }
+
+        [Output("cr73b_groupby")]
+        public OutArgument<string> cr73b_groupby { get; set; }
+
+        protected override void Execute(CodeActivityContext executionContext)
         {
-            QueryExpression query = new QueryExpression("aiatips_students");
-            query.ColumnSet.AddColumns("aiatips_name");
-            query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-            EntityCollection ec = service.RetrieveMultiple(query);
-            return ec.Entities.Count + 1;
+            ITracingService tracingService = executionContext.GetExtension<ITracingService>();
+            IWorkflowContext context = executionContext.GetExtension<IWorkflowContext>();
+            IOrganizationServiceFactory serviceFactory = executionContext.GetExtension<IOrganizationServiceFactory>();
+            IOrganizationService service = serviceFactory.CreateOrganizationService(context.UserId);
+            var key = cr73b_staffemail.Get(executionContext);
+            tracingService.Trace(key);
+            QueryCount(service,key, tracingService);
+            cr73b_lanid.Set(executionContext, QueryCount(service, key, tracingService));
+            cr73b_groupby.Set(executionContext, QueryCount(service, key, tracingService));
+
         }
-
-        private int QueryCountByFetchXml(IOrganizationService service)
+        private string QueryCount(IOrganizationService service,string abc, ITracingService tracingService)
         {
-            string fetchXml = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
-  <entity name='aiatips_students'>
-    <attribute name='aiatips_studentsid' />
-    <attribute name='aiatips_name' />
-    <order attribute='aiatips_name' descending='false' />
-    <filter type='and'>
-      <condition attribute='statecode' operator='eq' value='0' />
-    </filter>
-  </entity>
-</fetch>";
-            EntityCollection ec = service.RetrieveMultiple(new FetchExpression(fetchXml));
-            return ec.Entities.Count + 1;
+            
+            QueryExpression query = new QueryExpression("cr73b_staff_campagin");
+            query.ColumnSet.AddColumns("cr73b_lanid", "cr73b_groupby");
+            query.Criteria.AddCondition("cr73b_staffemail", ConditionOperator.Equal, abc);
+            EntityCollection ec = service.RetrieveMultiple(query);
+            ec.Entities[0].GetAttributeValue<string>("cr73b_lanid");
+            if (ec.Entities.Count > 0)
+            {
+                tracingService.Trace("123");
+                if (ec.Entities[0].Contains("cr73b_lanid"))
+                {
+                    string test;
+                    tracingService.Trace("aaaaaaaaaaaaaaaa");
+                    test = ec.Entities[0].GetAttributeValue<string>("cr73b_lanid");
+                    tracingService.Trace("bbbbbbbbbbbbbbbb"+test);
+                    return test;
+                }
+                else
+                {
+                    return "false-aiden";
+                }
+                
+            }
+            else
+            {
+                tracingService.Trace("456");
+                return "aiden:1111111111";
+            }
         }
     }
 }
+
 
